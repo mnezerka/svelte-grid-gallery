@@ -17,13 +17,13 @@
 
     onMount(() => {
         resize_observer = new ResizeObserver(entries => {
-            console.log('resized', entries[0].contentRect.width)
-            container_width = entries[0].contentRect.width;
-            thumbnails = render_thumbs()
+            if (entries.length > 0) {
+                container_width = entries[0].contentRect.width;
+                thumbnails = render_thumbs()
+            }
         })
 
         resize_observer.observe(gallery_element)
-
     })
 
     onDestroy(() => {
@@ -173,8 +173,6 @@
 
 <div bind:this={gallery_element}>
 
-    <h3>This is Gallery</h3>
-
     {#if active_image_ix != null}
         <Lightbox
             url={images[active_image_ix].src}
@@ -184,6 +182,7 @@
             show_prev={active_image_ix > 0}
             show_next={active_image_ix < images.length - 1}
             caption={images[active_image_ix].title}
+            pos="{active_image_ix + 1} / {images.length}"
         />
     {/if}
 

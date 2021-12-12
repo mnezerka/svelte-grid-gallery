@@ -6,6 +6,7 @@
     export let on_next = () => {}
     export let show_prev = true;
     export let show_next = true;
+    export let pos = "";
 
     function on_window_key_down(event) {
       if (event.key === 'Escape') {
@@ -22,7 +23,7 @@
 <svelte:window on:keydown={on_window_key_down} />
 
 <!-- The Modal/Lightbox -->
-<div id="myModal" class="modal">
+<div class="modal">
 
     <span class="close cursor" on:click={on_close}>&times;</span>
 
@@ -35,12 +36,17 @@
     <div class="next" on:click={on_next}>&#10095;</div>
     {/if}
 
-    <div class="modal-content" on:click={on_next}>
+    <div class="modal-inner">
+        <div class="modal-content" on:click={on_next}>
 
-        <img src={url} alt="todo" title="todo" />
+            <img src={url} alt="todo" title="todo" />
 
-        <!-- Caption text -->
-        <div class="caption-container">{caption}</div>
+            <!-- Caption text -->
+            <div class="caption-container">
+                <div class="caption">{caption}</div>
+                {#if pos.length > 0}<div class="pos">{pos}</div>{/if}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -52,7 +58,7 @@
   align-items: center;
   justify-content: center;
   position: fixed;
-  z-index: 1;
+  z-index: 1000;
   /* padding-top: 100px; */
   left: 0;
   top: 0;
@@ -63,6 +69,11 @@
   background-color:rgba(0, 0, 0, 0.9);
 }
 
+.modal-inner {
+    /*text-align: center;*/
+    margin: auto;
+}
+
 /* Modal Content */
 .modal-content {
   /* background-color: #fefefe;*/
@@ -70,13 +81,13 @@
 }
 
 .modal-content img {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 90px);
 }
 
 /* The Close Button */
 .close {
-  color: #aaa;
+  color: #555;
   position: absolute;
   top: 10px;
   right: 25px;
@@ -86,7 +97,7 @@
 
 .close:hover,
 .close:focus {
-  color: #999;
+  color: #aaa;
   text-decoration: none;
   cursor: pointer;
 }
@@ -100,10 +111,9 @@
   width: auto;
   padding: 16px;
   margin-top: -50px;
-  color: #aaa;
+  color: #555;
   font-weight: bold;
   font-size: 40px;
-  transition: 0.6s ease;
   border-radius: 0 3px 3px 0;
   user-select: none;
   -webkit-user-select: none;
@@ -122,7 +132,7 @@
 /* On hover, add a black background color with a little bit see-through */
 .prev:hover,
 .next:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+  color: #aaa;
 }
 
 /* Caption text */
@@ -130,7 +140,15 @@
   /*text-align: center;*/
   /*background-color: black;*/
   /*padding: 2px 16px;*/
+  display: flex;
+  flex-direction: row;
   color: #aaa;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.caption-container .caption {
+    flex-grow: 1;
 }
 
 </style>
