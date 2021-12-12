@@ -1,4 +1,7 @@
 <script>
+    import { onMount } from 'svelte'
+    import Spinner from './Spinner.svelte'
+
     export let url
     export let caption = ""
     export let on_close = () => {}
@@ -7,6 +10,20 @@
     export let show_prev = true;
     export let show_next = true;
     export let pos = "";
+
+    let loaded = false;
+    let this_image;
+
+    
+    // this is how to react on changes of properites, here we react
+    // on change of url to enable loading (spinner)
+    $: { if (url) { loaded = false } }
+
+    onMount(() => {
+      this_image.onload = () => {
+        loaded = true
+      }
+    }) 
 
     function on_window_key_down(event) {
       if (event.key === 'Escape') {
@@ -39,13 +56,26 @@
     <div class="modal-inner">
         <div class="modal-content" on:click={on_next}>
 
-            <img src={url} alt="todo" title="todo" />
+            {#if !loaded }
+              <Spinner />
+            {/if}
 
-            <!-- Caption text -->
-            <div class="caption-container">
-                <div class="caption">{caption}</div>
-                {#if pos.length > 0}<div class="pos">{pos}</div>{/if}
-            </div>
+            <img
+              bind:this={this_image}
+              src={url}
+              alt="{caption}"
+              title="{caption}"
+              style="display: {loaded ? "inherit" : "none"}"
+            />
+
+            {#if loaded }
+              <!-- Caption text -->
+              <div class="caption-container">
+                  <div class="caption">{caption}</div>
+                  {#if pos.length > 0}<div class="pos">{pos}</div>{/if}
+              </div>
+            {/if}
+
         </div>
     </div>
 </div>
@@ -137,9 +167,6 @@
 
 /* Caption text */
 .caption-container {
-  /*text-align: center;*/
-  /*background-color: black;*/
-  /*padding: 2px 16px;*/
   display: flex;
   flex-direction: row;
   color: #aaa;
