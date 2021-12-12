@@ -1,7 +1,7 @@
 <script>
-    import { watchResize } from "svelte-watch-resize";
     import Thumbnail from "./Thumbnail.svelte";
     import Lightbox from "./Lightbox.svelte";
+    import { onMount, onDestroy } from "svelte";
 
     // properties
     export let images = []  // images to be rendered
@@ -12,6 +12,25 @@
     let thumbnails = []; // current list of thumbnails (computed from images)
     let container_width = 0; // width of DOM container
     let active_image_ix = null;
+    let gallery_element; // dom element of gallery
+    let resize_observer; // resize observer to be notified of size changes
+
+    onMount(() => {
+        resize_observer = new ResizeObserver(entries => {
+            console.log('resized', entries[0].contentRect.width)
+            container_width = entries[0].contentRect.width;
+            thumbnails = render_thumbs()
+        })
+
+        resize_observer.observe(gallery_element)
+
+    })
+
+    onDestroy(() => {
+        if (resize_observer) {
+            resize_observer.disconnect();
+        }
+    })
 
     /*
      The purpose of this method is to calculate
@@ -133,20 +152,6 @@
         return thumbs;
     }
 
-    // called when gallery element is resized
-    function onResize(node) {
-        //console.log("resized, new width: ", node.clientWidth)
-
-        // if no diff in size
-        if (node.clientWidth == container_width) {
-            return;
-        }
-
-        container_width = node.clientWidth
-
-        thumbnails = render_thumbs()
-    }
-
     function onThumbnailClick(ix) {
         if (ix < images.length) {
             active_image_ix = ix;
@@ -163,9 +168,10 @@
         }
     }
 
+
 </script>
 
-<div use:watchResize={onResize}>
+<div bind:this={gallery_element}>
 
     <h3>This is Gallery</h3>
 
