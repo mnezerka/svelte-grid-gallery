@@ -19,7 +19,7 @@
         resize_observer = new ResizeObserver(entries => {
             if (entries.length > 0) {
                 container_width = entries[0].contentRect.width;
-                thumbnails = render_thumbs()
+                debounced_update_thumbnails()
             }
         })
 
@@ -32,6 +32,24 @@
         }
     })
 
+    function update_thumbnails() {
+        thumbnails = render_thumbs()
+    }
+
+    const debounced_update_thumbnails = debounce(update_thumbnails, 300)
+
+    /* delay function execution to avoid too many updates
+      during e.g. resizing window by mouse */
+    function debounce(func, delay) {
+		let timer;
+
+		return function () {
+			const context = this;
+			const args = arguments;
+			clearTimeout(timer);
+			timer = setTimeout(() => func.apply(context, args), delay);
+		};
+	};
     /*
      The purpose of this method is to calculate
      how much should be cutted from each image

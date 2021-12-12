@@ -36,7 +36,6 @@
         user-select: none;
         position: relative;
         float: left;
-        background: #f00;
         padding: 0px;
     }
 
